@@ -1,0 +1,92 @@
+
+# Create regional persistent SSD disk 
+
+gcloud beta compute disks create imaterialist-fashion-ssd --size 50 --type pd-ssd --region us-central1 --replica-zones us-central1-f 
+
+#################################################################
+# High-CPU instance for downloading dataset
+
+gcloud beta compute --project=deccanlearners instances create downloader-vm --zone=us-central1-f --machine-type=custom-24-22272 --subnet=default --network-tier=PREMIUM --no-restart-on-failure --maintenance-policy=TERMINATE --preemptible --service-account=206684283285-compute@developer.gserviceaccount.com --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append --tags=http-server,https-server --image=ubuntu-1804-bionic-v20180522 --image-project=ubuntu-os-cloud --boot-disk-size=10GB --boot-disk-type=pd-ssd --boot-disk-device-name=downloader-vm
+
+gcloud compute --project=deccanlearners firewall-rules create default-allow-http --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:80 --source-ranges=0.0.0.0/0 --target-tags=http-server
+
+gcloud compute --project=deccanlearners firewall-rules create default-allow-https --direction=INGRESS --priority=1000 --network=default --action=ALLOW --rules=tcp:443 --source-ranges=0.0.0.0/0 --target-tags=https-server
+
+#################################################################
+
+gcloud beta compute instances attach-disk downloader-vm --disk imaterialist-fashion-ssd --disk-scope regional
+
+
+########################################################
+# Format Disk
+
+sudo lsblk
+
+sudo mkfs.ext4 -m 0 -F -E lazy_itable_init=0,lazy_journal_init=0,discard /dev/sdb
+
+sudo mkdir -p /mnt/disks/imaterialist_fashion
+
+sudo mount -o discard,defaults /dev/sdb /mnt/disks/imaterialist_fashion
+
+sudo chmod a+w /mnt/disks/imaterialist_fashion
+
+sudo cp /etc/fstab /etc/fstab.backup
+
+sudo blkid /dev/sdb
+
+# In /etc/fstab
+UUID=[UUID_VALUE] /mnt/disks/imaterialist_fashion ext4 discard,defaults,nofail 0 2
+
+OR
+echo UUID=`sudo blkid -s UUID -o value /dev/sdb` /mnt/disks/disk-1 ext4 discard,defaults,nofail 0 2 | sudo tee -a /etc/fstab
+
+########################################################
+sudo apt install build-essential binutils git imagemagick unzip parallel
+
+git clone --recursive https://github.com/sourabhd/objrec
+
+
+#########################################################
+
+mkdir -p /mnt/disks/imaterialist_fashion/data
+mkdir -p /mnt/disks/imaterialist_fashion/data/input
+mkdir -p /mnt/disks/imaterialist_fashion/data/output
+chown -R saurabh_daptardar:saurabh_daptardar /mnt/disks/imaterialist_fashion/data
+#########################################################
+
+gcloud compute scp /data/datasets/kaggle_fashion/data/input/train_tiny.json saurabh_daptardar@downloader-vm:/mnt/disks/imaterialist_fashion/data/input/
+
+gcloud compute scp /data/datasets/kaggle_fashion/data/input/train_small.json saurabh_daptardar@downloader-vm:/mnt/disks/imaterialist_fashion/data/input/
+
+gcloud compute scp /home/sourabhd/.kaggle/competitions/imaterialist-challenge-fashion-2018/train.json.zip saurabh_daptardar@downloader-vm:/mnt/disks/imaterialist_fashion/data/input/
+
+ gcloud compute scp /home/sourabhd/.kaggle/competitions/imaterialist-challenge-fashion-2018/train.json.zip saurabh_daptardar@downloader-vm:/mnt/disks/imaterialist_fashion/data/input/
+
+gcloud compute scp /data/datasets/kaggle_fashion/data/input/validation.json saurabh_daptardar@downloader-vm:/mnt/disks/imaterialist_fashion/data/input/
+
+gcloud compute scp /data/datasets/kaggle_fashion/data/input/test.json saurabh_daptardar@downloader-vm:/mnt/disks/imaterialist_fashion/data/input/
+
+gcloud compute scp /data/datasets/kaggle_fashion/data/input/train_tiny.txt saurabh_daptardar@downloader-vm:/mnt/disks/imaterialist_fashion/data/input/
+
+gcloud compute scp /data/datasets/kaggle_fashion/data/input/train_small.txt saurabh_daptardar@downloader-vm:/mnt/disks/imaterialist_fashion/data/input/
+
+gcloud compute scp /data/datasets/kaggle_fashion/data/input/train.txt.tar.bz2 saurabh_daptardar@downloader-vm:/mnt/disks/imaterialist_fashion/data/input/
+
+gcloud compute scp /data/datasets/kaggle_fashion/data/input/validation.txt saurabh_daptardar@downloader-vm:/mnt/disks/imaterialist_fashion/data/input/
+
+gcloud compute scp /data/datasets/kaggle_fashion/data/input/test.txt saurabh_daptardar@downloader-vm:/mnt/disks/imaterialist_fashion/data/input/
+
+cd /mnt/disks/imaterialist_fashion/data/input
+unzip train.json.zip
+tar xvf train.txt.tar.bz2
+
+#########################################################
+
+mkdir -p /mnt/disks/imaterialist_fashion/data/input/img_train
+mkdir -p /mnt/disks/imaterialist_fashion/data/input/img_validation
+mkdir -p /mnt/disks/imaterialist_fashion/data/input/img_test
+
+
+
+
+
