@@ -14,5 +14,5 @@ njobs="$3"
 
 cd $dst
 pwd
-parallel --no-notice --progress --bar --timeout="300%" --colsep=' ' -j $njobs 'wget -q {1} -O {2}.jpg &&  mogrify -resize "256^>" {2}.jpg' :::: "$filelist"
+parallel --no-notice --progress --bar --timeout="300%" --colsep=' ' -j $njobs 'wget -q --no-clobber {1} -O {2}.jpg &&  mogrify -resize "256^>" {2}.jpg' :::: "$filelist"
 cd -
