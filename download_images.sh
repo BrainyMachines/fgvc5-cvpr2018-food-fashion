@@ -13,7 +13,7 @@ dst="$2"
 njobs="$3"
 
 dwld() {
-    [ "$(identify $2.jpg |& awk '{ print $2 == "JPEG" }')" == "1" ] ||  (wget -q $1 -O $2.jpg &&  mogrify -resize "256^>" $2.jpg)
+    [ "$(identify $2.jpg |& awk '{ print $2 == "JPEG" }')" == "1" ] ||  (wget -q -t 5 $1 -O $2.jpg &&  mogrify -resize "256^>" $2.jpg)
 }
 
 export -f dwld
