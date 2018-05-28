@@ -20,5 +20,5 @@ export -f dwld
 
 cd $dst
 pwd
-parallel --no-notice --progress --bar --colsep=" " -j $njobs "dwld {1} {2}" :::: "$filelist"
+parallel --no-notice --load="100%" --progress --bar --colsep=" " -j $njobs "dwld {1} {2}" :::: "$filelist"
 cd -
