@@ -12,7 +12,13 @@ filelist="$1"
 dst="$2"
 njobs="$3"
 
+dwld() {
+[ `identify $2.jpg |& awk '{ print $2 == "JPEG" }'` -eq 1 ] ||  (wget -q $1 -O $2.jpg &&  mogrify -resize "256^>" $2.jpg)
+}
+
+export -f dwld
+
 cd $dst
 pwd
-parallel --no-notice --progress --bar --timeout="300%" --colsep=' ' -j $njobs 'wget -q --no-clobber {1} -O {2}.jpg &&  mogrify -resize "256^>" {2}.jpg' :::: "$filelist"
+parallel --no-notice --progress --bar --colsep=' ' -j $njobs 'dwld {1} {2}' :::: "$filelist"
 cd -
