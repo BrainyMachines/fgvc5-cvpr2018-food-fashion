@@ -40,10 +40,10 @@ apt-get install -y --no-install-recommends \
          libjpeg-dev \
          libpng-dev
 
-mkdir -p /mnt/ram-disk
-mount -t tmpfs -o size=50g tmpfs /mnt/ram-disk
-mkdir -p /mnt/ram-disk/imaterialist_fashion
-chown -R saurabh_daptardar:saurabh_daptardar /mnt/ram-disk/imaterialist_fashion
+# mkdir -p /mnt/ram-disk
+# mount -t tmpfs -o size=50g tmpfs /mnt/ram-disk
+# mkdir -p /mnt/ram-disk/imaterialist_fashion
+# chown -R saurabh_daptardar:saurabh_daptardar /mnt/ram-disk/imaterialist_fashion
 
 # mkdir -p /mnt/disks
 # mkdir -p /mnt/disks/imaterialist_fashion
