@@ -14,9 +14,10 @@ export LOCALDIR="$HOME/.local"
 export PATH="$LOCALDIR/bin:$PATH"
 
 # 3) Miniconda
-export MCONDA="$LOCALDIR/conda/miniconda3"
+export CONDA="$LOCALDIR/conda"
+export MCONDA="$CONDA/miniconda3"
 export PY3K="$MCONDA/envs/py3k"
-export PATH="$PY3K/bin:$MCONDA/bin:$PATH"
+export PATH="$CONDA/bin:$PY3K/bin:$MCONDA/bin:$PATH"
 export PYTHONPATH="$PY3K/lib/python3.6/site-packages:$PYTHONPATH"
 export PATH="$PY3K/bin:$PATH"
 export CPATH="$PY3K/include:$CPATH"
